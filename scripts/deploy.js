@@ -20,6 +20,8 @@ async function main() {
   const nftFactoryContract = await nftFactory.deploy();
   await nftFactoryContract.deployed();
 
+  // Wait for it to be mined.
+
   console.log("nft address: ", nftEscrowContract.address);
 }
 

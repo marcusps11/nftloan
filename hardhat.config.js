@@ -21,7 +21,9 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   networks: {
     rinkeby: {
       url: process.env.RINKBY_HTTP,
-      accounts: [process.env.PRIVATE_KEY]
+      accounts: [process.env.PRIVATE_KEY],
+
+      gas: 2100000, gasPrice: 8000000000
     },
   },
 };
