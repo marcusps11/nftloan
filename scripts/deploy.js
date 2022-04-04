@@ -16,13 +16,24 @@ async function main() {
   console.log("Escrow address: ", nftEscrowContract.address);
 
 
-  const nftFactory = await hre.ethers.getContractFactory("MarcusNft");
-  const nftFactoryContract = await nftFactory.deploy();
-  await nftFactoryContract.deployed();
+  const nftContractFactory = await hre.ethers.getContractFactory('MyEpicNFT');
+  const nftContract = await nftContractFactory.deploy();
+  await nftContract.deployed();
+  console.log("Contract deployed to:", nftContract.address);
+
+  // let txn = await nftContract.makeAnEpicNFT()
+  // // Wait for it to be mined.
+  // await txn.wait()
+
+  // // Mint another NFT for fun.
+  // txn = await nftContract.makeAnEpicNFT()
+  // // Wait for it to be mined.
+  // await txn.wait()
+
 
   // Wait for it to be mined.
 
-  console.log("nft address: ", nftEscrowContract.address);
+  // console.log("nft address: ", nftFactoryContract.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
@@ -30,6 +41,6 @@ async function main() {
 main()
   .then(() => process.exit(0))
   .catch((error) => {
-    console.error(error);
+    console.error(error); 
     process.exit(1);
   });

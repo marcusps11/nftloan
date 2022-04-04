@@ -25,5 +25,11 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 
       gas: 2100000, gasPrice: 8000000000
     },
+    ropsten: {
+      url: process.env.ROPSTEN_HTTP,
+      accounts: [process.env.PRIVATE_KEY],
+
+      gas: 2100000, gasPrice: 8000000000
+    },
   },
 };

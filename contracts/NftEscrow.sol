@@ -30,7 +30,7 @@ contract NftEscrow is IERC721Receiver {
     bool sellerCancel = false;
     ProjectState public projectState;
     uint interestRate;
-    address private bank = 0x17F6AD8Ef982297579C203069C1DbfFE4348c372;
+    address private bank = 0x43dfE62621F352e7E940CB191b03822B3212034B;
     uint public startTime;
     uint public endTime;
 

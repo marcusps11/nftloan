@@ -2,9 +2,6 @@
 
 pragma solidity >=0.7.0 <0.9.0;
  
-
-// We first import some OpenZeppelin Contracts.
-
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
@@ -14,24 +11,26 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "hardhat/console.sol";
 
-// We inherit the contract we imported. This means we'll have access
-// to the inherited contract's methods.
-contract MarcusNft is ERC721URIStorage {
+
+contract MyEpicNFT is ERC721URIStorage {
   // Magic given to us by OpenZeppelin to help us keep track of tokenIds.
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIds;
 
-  // We need to pass the name of our NFTs token and its symbol.
+  event NewEpicNFTMinted(address sender, uint256 tokenId);
+
+
   constructor() ERC721 ("MFT", "MFT") {
     console.log("This is my nft!");
   }
 
-  // A function our user will hit to get their NFT.
-  function makeNft() public {
+  function makeAnEpicNFT() public {
     uint256 newItemId = _tokenIds.current();
     _safeMint(msg.sender, newItemId);
     _setTokenURI(newItemId, "https://jsonkeeper.com/b/1LHH");
     console.log("An NFT w/ ID %s has been minted to %s", newItemId, msg.sender);
+    emit NewEpicNFTMinted(msg.sender, newItemId);
+
     _tokenIds.increment();
   }
 
