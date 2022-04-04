@@ -15,19 +15,14 @@ import "hardhat/console.sol";
 //     }
 // }
 
-
-
 contract NftEscrow is IERC721Receiver {
     
     enum ProjectState {newEscrow, nftDeposited, cancelNFT, ethDeposited, nftReturned, deliveryInitiated, delivered}
     
     address payable public sellerAddress;
     address payable public buyerAddress;
-    address payable public admin;
     address public nftAddress;
     uint256 tokenID;
-    bool buyerCancel = false;
-    bool sellerCancel = false;
     ProjectState public projectState;
     uint interestRate;
     address private bank = 0x43dfE62621F352e7E940CB191b03822B3212034B;
