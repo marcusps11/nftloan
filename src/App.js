@@ -3,13 +3,22 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import { ethers } from "ethers";
 import nftAbi from "./utils/MarcusNft.json";
+import escrowAbi from "./utils/NftEscrow.json";
+import ercAbi from "./utils/erc.json";
+
+
+import { useForm } from './utils/hooks/useForm';
 
 function App() {
   const [currentAccount, setCurrentAccount] = useState("");
-  const CONTRACT_ADDRESS = "0x46b2Cb8cf6Ca1B0164965b5cc13938937EB07F70";
+  const CONTRACT_ADDRESS = "0x06C3d53932b99f9B92Be02fCc1a5837d695c1C9f";
+  const ESCROW_CONTRACT_ADDRESS = '0x0BcB295b05D7ff2021f903b330383BD21371bcbA';
+  const {values, handleChange} = useForm()
+  const [holdsToken, setDoesWalletHoldToken] = useState(false)
+
+
 
   const setupEventListener = async () => {
-    console.log(';called')
     try {
       const { ethereum } = window;
 
@@ -18,6 +27,10 @@ function App() {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
         const connectedContract = new ethers.Contract(CONTRACT_ADDRESS, nftAbi.abi, signer);
+        const connectedEscrowContract = new ethers.Contract(CONTRACT_ADDRESS, ercAbi.abi, signer);
+
+        console.log(connectedEscrowContract)
+
 
     
         connectedContract.on("NewEpicNFTMinted", (from, tokenId) => {
@@ -25,6 +38,12 @@ function App() {
           console.log(from, tokenId.toNumber())
           alert(`Hey there! We've minted your NFT and sent it to your wallet. It may be blank right now. It can take a max of 10 min to show up on OpenSea. Here's the link: https://testnets.opensea.io/assets/${CONTRACT_ADDRESS}/${tokenId.toNumber()}`)
         });
+
+
+        connectedEscrowContract.on("Approval", (owner, approved, tokenId) => {
+          alert(`Approval Fired`, owner, tokenId.toNumber())
+        });
+
 
         console.log("Setup event listener!")
 
@@ -46,7 +65,6 @@ function App() {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
         const connectedContract = new ethers.Contract(CONTRACT_ADDRESS, nftAbi.abi, signer);
-        console.log(connectedContract)
         console.log("Going to pop wallet now to pay gas...")
         let nftTxn = await connectedContract.makeAnEpicNFT();
         
@@ -89,6 +107,135 @@ function App() {
     }
 }
 
+const approveEscrowForDeposit = async(e, ) => {
+  e.preventDefault()
+  try {
+    const { ethereum } = window;
+
+    if (ethereum) {
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const signer = provider.getSigner();
+      const connectedContract = new ethers.Contract(CONTRACT_ADDRESS, nftAbi.abi, signer);
+      console.log(connectedContract)
+
+      let nftTxn = await connectedContract.approve(values.approvedAddress, values.tokenId);
+        
+      console.log("Mining...please wait.", nftTxn)
+      await nftTxn.wait();
+      
+      console.log(`Mined, see transaction: https://rinkeby.etherscan.io/tx/${nftTxn.hash}`);
+      // console.log(connectedContract)
+
+    } else {
+      console.log("Ethereum object doesn't exist!");
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const depositNft = async(e, address, tokenId) => {
+  e.preventDefault()
+  try {
+    const { ethereum } = window;
+
+    if (ethereum) {
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const signer = provider.getSigner();
+      const connectedContract = new ethers.Contract(ESCROW_CONTRACT_ADDRESS, escrowAbi.abi, signer);
+
+      let nftTxn = await connectedContract.depositNFT(CONTRACT_ADDRESS, values.nftId);
+        
+      console.log("Mining...please wait.", nftTxn)
+      await nftTxn.wait();
+      
+      console.log(`Mined, see transaction: https://rinkeby.etherscan.io/tx/${nftTxn.hash}`);
+      // console.log(connectedContract)
+
+    } else {
+      console.log("Ethereum object doesn't exist!");
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const returnNft = async(e) => {
+  e.preventDefault()
+  try {
+    const { ethereum } = window;
+
+    if (ethereum) {
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const signer = provider.getSigner();
+      const connectedContract = new ethers.Contract(ESCROW_CONTRACT_ADDRESS, escrowAbi.abi, signer);
+
+      let nftTxn = await connectedContract.returnNft(CONTRACT_ADDRESS, values.returnNftId);
+        
+      console.log("Mining...please wait.", nftTxn)
+      await nftTxn.wait();
+      
+      console.log(`Mined, see transaction: https://rinkeby.etherscan.io/tx/${nftTxn.hash}`);
+      // console.log(connectedContract)
+
+    } else {
+      console.log("Ethereum object doesn't exist!");
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const sendEth = async(e) => {
+  e.preventDefault()
+  try {
+    const { ethereum } = window;
+
+    if (ethereum) {
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const signer = provider.getSigner();
+      const connectedContract = new ethers.Contract(ESCROW_CONTRACT_ADDRESS, escrowAbi.abi, signer);
+      let owedAmount = await connectedContract.getOwedAmount();
+      owedAmount=owedAmount.toString()
+      let transaction=await connectedContract.depositEth({value:owedAmount})
+      await transaction.wait();
+        
+   
+      
+      console.log(`Mined, see transaction: https://rinkeby.etherscan.io/tx/${transaction.hash}`);
+      // console.log(connectedCntract)
+
+    } else {
+      console.log("Ethereum object doesn't exist!");
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+
+const doesWalletHoldToken = async(e) => {
+  e.preventDefault()
+  try {
+    const { ethereum } = window;
+
+    if (ethereum) {
+      const provider = new ethers.providers.Web3Provider(ethereum);
+
+      const connectedContract = new ethers.Contract(ESCROW_CONTRACT_ADDRESS, escrowAbi.abi, provider);
+
+      let holdsToken = await connectedContract.walletHoldsToken(values.wallet,values.tokenAddress);
+      setDoesWalletHoldToken(holdsToken)
+      console.log(holdsToken)
+      
+    } else {
+      console.log("Ethereum object doesn't exist!");
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
   const connectWallet = async () => {
     try {
       const { ethereum } = window;
@@ -116,20 +263,51 @@ function App() {
   
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+        <h4>Current MSG.SENDER</h4>
         <button onClick={connectWallet}>{currentAccount ? currentAccount : 'CONNECT'}</button>
         <button onClick={askContractToMintNft}>MINT NFT</button>
+        <h6>ESCROW CONTRACT_ADDRESS = {ESCROW_CONTRACT_ADDRESS}</h6>
+        <h6>NFT CONTRACT ADDRESS = {CONTRACT_ADDRESS}</h6>
 
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+        <div>
+          <h2>Approve Escrow Contract</h2>
+          <div className="deposit__container">
+
+          <form >
+
+          <input placeholder='Address to Approve' onChange={handleChange} value={values.approvedAddress} name="approvedAddress" type="text"></input>
+        <input placeholder='Token Id' onChange={handleChange} value={values.tokenId} name="tokenId" type="text"></input>
+        <button type="submit" onClick={approveEscrowForDeposit}>Approve</button>
+
+          </form>
+          </div>
+        </div>
+
+        <div className="deposit__container">
+        <input placeholder='nftId' onChange={handleChange} value={values.nftId} name="nftId" type="text"></input>
+        <button onClick={depositNft}>DEPOSIT NFT</button>
+
+        </div>
+
+        <h5>{holdsToken ? ' Smart Contract Holds Token' : 'Smart Contract Does Not Hold Token'}</h5>
+        <input placeholder='Wallet Address' onChange={handleChange} value={values.wallet} name="wallet" type="text"></input>
+        <input placeholder='Token ADdress Address' onChange={handleChange} value={values.tokenAddress} name="tokenAddress" type="text"></input>
+        <button onClick={doesWalletHoldToken}>Does Wallet Hold token?</button>
+
+
+        <div className="deposit__container">
+        <input placeholder='Amount 100Wei' onChange={handleChange} value={values.amount} name="amount" type="text"></input>
+        <button onClick={sendEth}>SEND ETH</button>
+
+        </div>
+
+        <div className="deposit__container">
+        <input placeholder='returnNftId' onChange={handleChange} value={values.returnNftId} name="returnNftId" type="text"></input>
+        <button onClick={returnNft}>RETURN NFT</button>
+
+        </div>
+
+
     </div>
   );
 }

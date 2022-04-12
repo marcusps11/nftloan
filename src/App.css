@@ -7,6 +7,11 @@
   pointer-events: none;
 }
 
+input {
+  padding: 5px 15px;
+  min-width: 400px;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
@@ -35,4 +40,10 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.deposit__container {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
 }

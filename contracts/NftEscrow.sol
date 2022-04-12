@@ -28,13 +28,25 @@ contract NftEscrow is IERC721Receiver {
     address private bank = 0x43dfE62621F352e7E940CB191b03822B3212034B;
     uint public startTime;
     uint public endTime;
+    uint256 public amountOwed;
+
 
     constructor(){
         sellerAddress = payable(msg.sender);
         projectState = ProjectState.newEscrow;
         interestRate = 10;
         endTime = block.timestamp + 604800;
+        amountOwed = 100 wei;
+
     }
+
+      event Approve(address sender, uint256 tokenId);
+
+    receive ()payable external {
+            depositEth();
+        }
+
+
     
     function onERC721Received( address , address , uint256 , bytes calldata  ) public pure override returns (bytes4) {
         return this.onERC721Received.selector;
@@ -49,6 +61,7 @@ contract NftEscrow is IERC721Receiver {
     }
 
     function depositEth() public payable hasToken(address(this), nftAddress)  {
+        require(msg.value == amountOwed, 'You owe more money');
         buyerAddress = payable(msg.sender);
         projectState = ProjectState.ethDeposited;
         if(walletHoldsToken(address(this),nftAddress)) {
@@ -92,6 +105,11 @@ contract NftEscrow is IERC721Receiver {
         projectState = ProjectState.cancelNFT;
 
     }
+
+   function getOwedAmount() public view returns (uint256) {
+    return amountOwed;
+  }
+
 
     modifier hasToken(address  _wallet, address  _contract) {
 		require(ERC721(_contract).balanceOf(_wallet) > 0);
