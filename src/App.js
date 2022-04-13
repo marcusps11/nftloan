@@ -260,13 +260,13 @@ const doesWalletHoldToken = async(e) => {
     checkIfWalletIsConnected();
     
   }, [])
-  
   return (
-    <div className="App">
+<main class="mt-12 lg:mt-32 bg-gray-100 shadow-sm rounded-md p-8 ">
+    <section class="container mx-auto px-6 ">
         <h4>Current MSG.SENDER</h4>
         <button onClick={connectWallet}>{currentAccount ? currentAccount : 'CONNECT'}</button>
         <button onClick={askContractToMintNft}>MINT NFT</button>
-        <h6>ESCROW CONTRACT_ADDRESS = {ESCROW_CONTRACT_ADDRESS}</h6>
+        <h6 className='text-3xl font-bold underline'>ESCROW CONTRACT_ADDRESS = {ESCROW_CONTRACT_ADDRESS}</h6>
         <h6>NFT CONTRACT ADDRESS = {CONTRACT_ADDRESS}</h6>
 
         <div>
@@ -275,40 +275,42 @@ const doesWalletHoldToken = async(e) => {
 
           <form >
 
-          <input placeholder='Address to Approve' onChange={handleChange} value={values.approvedAddress} name="approvedAddress" type="text"></input>
-        <input placeholder='Token Id' onChange={handleChange} value={values.tokenId} name="tokenId" type="text"></input>
+          <input className='bg-white rounded-md border border-gray-200 p-3 focus:outline-none w-full' placeholder='Address to Approve' onChange={handleChange} value={values.approvedAddress} name="approvedAddress" type="text"></input>
+        <input className='bg-white rounded-md border border-gray-200 p-3 focus:outline-none w-full' placeholder='Token Id' onChange={handleChange} value={values.tokenId} name="tokenId" type="text"></input>
         <button type="submit" onClick={approveEscrowForDeposit}>Approve</button>
 
           </form>
           </div>
         </div>
 
-        <div className="deposit__container">
-        <input placeholder='nftId' onChange={handleChange} value={values.nftId} name="nftId" type="text"></input>
+        <div className="deposit__container flex items-center justify-between p-6 container mx-auto">
+        <label for="nftId" class="mb-3 block text-gray-700">NFT ID</label>
+        <input className='bg-white rounded-md border border-gray-200 p-3 focus:outline-none w-full' placeholder='nftId' onChange={handleChange} value={values.nftId} name="nftId" type="text"></input>
         <button onClick={depositNft}>DEPOSIT NFT</button>
 
         </div>
 
         <h5>{holdsToken ? ' Smart Contract Holds Token' : 'Smart Contract Does Not Hold Token'}</h5>
-        <input placeholder='Wallet Address' onChange={handleChange} value={values.wallet} name="wallet" type="text"></input>
-        <input placeholder='Token ADdress Address' onChange={handleChange} value={values.tokenAddress} name="tokenAddress" type="text"></input>
+        <input className='bg-white rounded-md border border-gray-200 p-3 focus:outline-none w-full' placeholder='Wallet Address' onChange={handleChange} value={values.wallet} name="wallet" type="text"></input>
+        <input className='bg-white rounded-md border border-gray-200 p-3 focus:outline-none w-full' placeholder='Token ADdress Address' onChange={handleChange} value={values.tokenAddress} name="tokenAddress" type="text"></input>
         <button onClick={doesWalletHoldToken}>Does Wallet Hold token?</button>
 
 
         <div className="deposit__container">
-        <input placeholder='Amount 100Wei' onChange={handleChange} value={values.amount} name="amount" type="text"></input>
+        <input className='bg-white rounded-md border border-gray-200 p-3 focus:outline-none w-full' placeholder='Amount 100Wei' onChange={handleChange} value={values.amount} name="amount" type="text"></input>
         <button onClick={sendEth}>SEND ETH</button>
 
         </div>
 
         <div className="deposit__container">
-        <input placeholder='returnNftId' onChange={handleChange} value={values.returnNftId} name="returnNftId" type="text"></input>
+        <input className='bg-white rounded-md border border-gray-200 p-3 focus:outline-none w-full' placeholder='returnNftId' onChange={handleChange} value={values.returnNftId} name="returnNftId" type="text"></input>
         <button onClick={returnNft}>RETURN NFT</button>
 
         </div>
 
 
-    </div>
+    </section>
+    </main>
   );
 }
 
