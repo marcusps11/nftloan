@@ -5,7 +5,7 @@ import { ethers } from "ethers";
 import nftAbi from "./utils/MarcusNft.json";
 import escrowAbi from "./utils/NftEscrow.json";
 import ercAbi from "./utils/erc.json";
-
+import Modal from './Modal'
 
 import { useForm } from './utils/hooks/useForm';
 
@@ -15,6 +15,7 @@ function App() {
   const ESCROW_CONTRACT_ADDRESS = '0x0BcB295b05D7ff2021f903b330383BD21371bcbA';
   const {values, handleChange} = useForm()
   const [holdsToken, setDoesWalletHoldToken] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
 
 
 
@@ -262,6 +263,10 @@ const doesWalletHoldToken = async(e) => {
   }, [])
   return (
 <main class="mt-12 lg:mt-32 bg-gray-100 shadow-sm rounded-md p-8 ">
+<button onClick={() => setModalOpen(!modalOpen)} class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button" data-modal-toggle="defaultModal">
+  Toggle modal
+</button>
+      <Modal setModalOpen={() => setModalOpen(!modalOpen)} active={modalOpen} handleChange={handleChange} values={values} />
     <section class="container mx-auto px-6 ">
         <h4>Current MSG.SENDER</h4>
         <button onClick={connectWallet}>{currentAccount ? currentAccount : 'CONNECT'}</button>
