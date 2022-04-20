@@ -40,14 +40,12 @@ contract NftEscrow is IERC721Receiver {
 
     }
 
-      event Approve(address sender, uint256 tokenId);
+    event Approve(address sender, uint256 tokenId);
 
     receive ()payable external {
             depositEth();
         }
 
-
-    
     function onERC721Received( address , address , uint256 , bytes calldata  ) public pure override returns (bytes4) {
         return this.onERC721Received.selector;
     }
@@ -93,12 +91,18 @@ contract NftEscrow is IERC721Receiver {
         return address(this).balance;
     }
 
+    function getProjectState() public view returns(ProjectState) {
+        return projectState;
+    }
+
+
     function claimMoney() public onlySeller payable {
         if(block.timestamp >= endTime && !walletHoldsToken(buyerAddress, nftAddress )) {
          payable(sellerAddress).transfer(address(this).balance);
 
         }
     }
+
 
     function cancelNFT() public  payable onlySeller hasToken(address(this), nftAddress)  {
         ERC721(nftAddress).safeTransferFrom(address(this), sellerAddress, tokenID);
