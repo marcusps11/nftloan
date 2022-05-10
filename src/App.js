@@ -10,11 +10,11 @@ import Modal from "./Modal";
 import { useForm } from "./utils/hooks/useForm";
 import { Nav } from "./utils/components/Nav";
 import { askContractToMintNft } from "./utils/services/ethereumService";
+import { CONTRACT_ADDRESS, ESCROW_CONTRACT_ADDRESS } from "./utils/constants";
 
 function App() {
   const [currentAccount, setCurrentAccount] = useState("");
-  const CONTRACT_ADDRESS = "0x06C3d53932b99f9B92Be02fCc1a5837d695c1C9f";
-  const ESCROW_CONTRACT_ADDRESS = "0x0BcB295b05D7ff2021f903b330383BD21371bcbA";
+
   const { values, handleChange } = useForm();
   const [holdsToken, setDoesWalletHoldToken] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -91,8 +91,8 @@ function App() {
     }
   };
 
-  const approveEscrowForDeposit = async () => {
-    console.log(values.approvedAddress);
+  const approveEscrowForDeposit = async (e) => {
+    console.log(values.approvedAddress, values.tokenId);
     try {
       const { ethereum } = window;
 
@@ -229,6 +229,7 @@ function App() {
   };
 
   const doesWalletHoldToken = async () => {
+    console.log('called')
     try {
       const { ethereum } = window;
 
@@ -245,8 +246,8 @@ function App() {
           ESCROW_CONTRACT_ADDRESS,
           CONTRACT_ADDRESS
         );
+        console.log(holdsToken)
         setDoesWalletHoldToken(holdsToken);
-        console.log(holdsToken);
       } else {
         console.log("Ethereum object doesn't exist!");
       }
@@ -304,46 +305,50 @@ function App() {
     checkIfWalletIsConnected();
     doesWalletHoldToken();
   }, []);
+
   return (
     <div class="flex mb-4">
+
       <div class="w-full bg-gray-500 h-12">
-        <Nav />
-        <main class=" bg-gray-100 shadow-sm rounded-md p-8 ">
-          <div class="flex mb-4">
-            <div class="w-1/2 bg-gray-400 h-12">
-              <h1 className="text-lg">Deposit NFT</h1>
-            </div>
-            <div class="w-1/2 bg-gray-500 h-12">
+          <main class=" bg-gray-100 shadow-sm rounded-md p-8 ">
+        <h6 className="text-3xl font-bold underline">
+              ESCROW CONTRACT_ADDRESS = {ESCROW_CONTRACT_ADDRESS}
+            </h6>
+            <h6>NFT CONTRACT ADDRESS = {CONTRACT_ADDRESS}</h6>
+            <h4>Current MSG.SENDER</h4>
+            <button onClick={connectWallet}>
+              {currentAccount ? currentAccount : "CONNECT"}
+            </button>
 
-            <button
-            onClick={() => setModalOpen(!modalOpen)}
-            class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-            type="button"
-            data-modal-toggle="defaultModal"
-          >
-            Get Started
-          </button>
-
-            </div>
-          </div>
           <div>
             <h3 className="font-medium">
               {holdsToken
                 ? " Smart Contract Holds Token"
                 : "Smart Contract Does Not Hold Token"}
             </h3>
+        
+
           </div>
-       
           <div>
-            <h3>Check Owner of NFT </h3>
-            <h3>{owner} </h3>
-            <input type="text"></input>
-            <button
-              className="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              onClick={checkOwnerOf}
-            >
-              CHeck Owner
-            </button>
+     
+       
+   
+          <h2 className="font-medium">
+               Step 1 - Mint NFT
+          </h2>
+          <h2 className="font-medium">
+               Step 2 - Approve Escrow contract to hold token
+          </h2>
+          <h2 className="font-medium">
+               Step 3 - Deposit NFT
+          </h2>
+          <h2 className="font-medium">
+               Step 4 - Seller Pays Money for NFT
+          </h2>
+          <h2 className="font-medium">
+               Step 5 - Smart Contract Executes code - Buyer must return NFT within set period
+          </h2>
+          
           </div>
           <Modal
             approveEscrowForDeposit={approveEscrowForDeposit}
@@ -354,47 +359,25 @@ function App() {
             values={values}
             currentStep={currentStep}
           />
-          <section class="container mx-auto px-6 ">
-            <h4>Current MSG.SENDER</h4>
-            <button onClick={connectWallet}>
-              {currentAccount ? currentAccount : "CONNECT"}
-            </button>
+          <section class=" ">
+     
             <button
               className="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               onClick={askContractToMintNft}
             >
               MINT NFT
             </button>
-            <h6 className="text-3xl font-bold underline">
-              ESCROW CONTRACT_ADDRESS = {ESCROW_CONTRACT_ADDRESS}
-            </h6>
-            <h6>NFT CONTRACT ADDRESS = {CONTRACT_ADDRESS}</h6>
+                
 
-            <div>
-              <h2>Approve Escrow Contract</h2>
-              <div className="deposit__container">
-                <form>
-                  <input
-                    className="bg-white rounded-md border border-gray-200 p-3 focus:outline-none w-full"
-                    placeholder="Address to Approve"
-                    onChange={handleChange}
-                    value={values.approvedAddress}
-                    name="approvedAddress"
-                    type="text"
-                  ></input>
-                  <input
-                    className="bg-white rounded-md border border-gray-200 p-3 focus:outline-none w-full"
-                    placeholder="Token Id"
-                    onChange={handleChange}
-                    value={values.tokenId}
-                    name="tokenId"
-                    type="text"
-                  ></input>
-                  <button type="submit" onClick={approveEscrowForDeposit}>
-                    Approve
-                  </button>
-                </form>
-              </div>
+            <div className="container">
+            <button
+            onClick={() => setModalOpen(!modalOpen)}
+            class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            type="button"
+            data-modal-toggle="defaultModal"
+          >
+            Get Started
+          </button>
             </div>
 
             <div className="deposit__container flex items-center justify-between p-6 container mx-auto">
@@ -428,9 +411,7 @@ function App() {
               name="tokenAddress"
               type="text"
             ></input>
-            <button onClick={doesWalletHoldToken}>
-              Does Wallet Hold token?
-            </button>
+       
 
             <div className="deposit__container">
               <input
@@ -455,6 +436,23 @@ function App() {
               ></input>
               <button onClick={returnNft}>RETURN NFT</button>
             </div>
+            <div>
+            <h3>Check Owner of NFT </h3>
+            <h3>{owner} </h3>
+            <input type="text"></input>
+            <button
+              className="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              onClick={checkOwnerOf}
+            >
+              CHeck Owner
+            </button>
+          </div>
+           <button
+            className="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+           onClick={doesWalletHoldToken}>
+              Does Wallet Hold token?
+            </button>
+            <h3>{holdsToken? 'Yes' : 'No'}</h3>
           </section>
         </main>
       </div>

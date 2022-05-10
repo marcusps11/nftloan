@@ -19,7 +19,6 @@ function Modal({
 //     }
 //   };
 
-console.log(currentStep)
 
   const moveToNextStep = () => {
 

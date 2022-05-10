@@ -20,7 +20,7 @@ contract MyEpicNFT is ERC721URIStorage {
   event NewEpicNFTMinted(address sender, uint256 tokenId);
 
 
-  constructor() ERC721 ("MFT", "MFT") {
+  constructor() ERC721 ("Marcus", "MarcusFT") {
     console.log("This is my nft!");
   }
 

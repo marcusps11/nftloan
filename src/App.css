@@ -51,3 +51,7 @@ input {
   display: flex;
   flex-direction: column;
 }
+
+.container {
+  padding: 20px 0;
+}
